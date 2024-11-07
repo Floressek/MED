@@ -1,29 +1,34 @@
-#%%
-# Import libraries
-import pandas as pd
+import matplotlib.animation as animation
 import matplotlib.pyplot as plt
-#%%
-# Defining data for the dataframe
-data = {
-    'Basket': ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P'],
-    'Apples': [10, 20, 30, 56, 40, 40, 67, 47, 40, 4, 49, 52, 5, 56, 35, 45],
-    'Bananas': [15, 6, 3, 45, 67, 44, 45, 11, 14, 18, 13, 12, 1, 34, 12, 12]
-}
+import numpy as np
 
-# Creating the dataframe
-df = pd.DataFrame(data)
+# Tworzenie figury i osi dla animacji
+fig = plt.figure(figsize=(10, 7))
+ax = fig.add_subplot(111, projection='3d')
 
-df
-#%%
-# Calculate the sums
-sum_apples = df['Apples'].sum()
-sum_bananas = df['Bananas'].sum()
+# Przykładowe dane do wykresu z 4 wymiarami
+np.random.seed(0)
+income = np.random.uniform(10000, 50000, 100)  # Przychody
+profit = np.random.uniform(1000, 10000, 100)  # Zysk
+user_count = np.random.uniform(100, 2000, 100)  # Liczba użytkowników
+costs = np.random.uniform(2000, 20000, 100)  # Koszty (czwarty wymiar)
 
-# Create a bar chart
-plt.bar(['Apples', 'Bananas'], [sum_apples, sum_bananas], color=['red', 'blue'])
+# Funkcja do aktualizacji wykresu w każdej klatce animacji
+def update(num):
+    ax.cla()  # Czyszczenie osi
+    sc = ax.scatter(income, profit, user_count, c=costs, cmap='viridis', s=50, alpha=0.7)
+    ax.view_init(elev=20., azim=num)  # Obracanie osi wokół osi Z
+    ax.set_xlabel('Income')
+    ax.set_ylabel('Profit')
+    ax.set_zlabel('User Count')
+    ax.set_title(f"Frame {num}")
+    return sc,
 
-# Set a title
-plt.title('Comparison of total Apples and Bananas')
+# Tworzenie animacji
+ani = animation.FuncAnimation(fig, update, frames=np.arange(0, 360, 2), interval=50, blit=False)
 
-# Show the plot
+# Zapisz animację jako GIF, jeśli jesteś w środowisku, które obsługuje animacje GIF.
+ani.save("3d_scatter_animation.gif", writer="pillow", fps=20)
+
+# Wyświetlenie animacji (dla środowisk obsługujących animacje inline, jak Jupyter Notebook)
 plt.show()
