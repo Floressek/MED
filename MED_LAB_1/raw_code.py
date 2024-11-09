@@ -6,6 +6,9 @@ from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 import matplotlib as mpl
 from mpl_toolkits.mplot3d import Axes3D
+from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_squared_error
+
 
 user_count_q = {
     'Q':
@@ -162,15 +165,9 @@ print(f"Model: U = {linear_regression.intercept_[0]:} + {linear_regression.coef_
 errors = calculate_model_stats(linear_regression.predict(R_train), U_train, R_train)
 print(errors)
 
-import matplotlib.pyplot as plt
-import numpy as np
-
 # Przygotowanie danych
 train_predictions = linear_regression.predict(R_train)
 test_predictions = linear_regression.predict(R_test)
-
-# Obliczanie przedziału ufności
-from sklearn.metrics import mean_squared_error
 
 mse = mean_squared_error(U_train, train_predictions)
 std_dev = np.sqrt(mse)
@@ -222,10 +219,6 @@ plt.text(0.02, 0.95, f'R² (test) = {linear_regression.score(R_test, U_test):.4f
 
 plt.tight_layout()
 plt.show()
-
-import matplotlib.pyplot as plt
-import numpy as np
-from sklearn.metrics import mean_squared_error
 
 
 # Funckja zmieniona w celu lepszej czytelnosci
