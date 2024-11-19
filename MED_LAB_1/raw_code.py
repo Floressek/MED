@@ -1,328 +1,473 @@
-import sklearn
-import numpy as np
+# import pandas as pd
+# import numpy as np
+# from sklearn.model_selection import train_test_split
+# from sklearn.preprocessing import StandardScaler
+# from sklearn.feature_selection import RFE, SelectKBest, f_regression
+# from sklearn.linear_model import LinearRegression
+# from sklearn.metrics import r2_score
+# import seaborn as sns
+# import matplotlib.pyplot as plt
+#
+#
+# def load_data():
+#     columns = ['Density', 'Pct.BF', 'Age', 'Weight', 'Height', 'Neck', 'Chest',
+#                'Abdomen', 'Waist', 'Hip', 'Thigh', 'Knee', 'Ankle', 'Bicep',
+#                'Forearm', 'Wrist']
+#     return pd.read_csv('dane.txt', delim_whitespace=True, names=columns, skiprows=1)
+#
+#
+# def analyze_feature_selection(df):
+#     """
+#     Implementacja trzech metod selekcji zmiennych:
+#     1. Analiza korelacji (eliminacja zmiennych silnie skorelowanych)
+#     2. Rekurencyjna eliminacja cech (RFE)
+#     3. Selekcja w oparciu o testy statystyczne (SelectKBest)
+#     """
+#     # Usuniecie zmiennej Density (jest silnie powiązana z Pct.BF)
+#     features = df.drop(['Density', 'Pct.BF'], axis=1)
+#     target = df['Pct.BF']
+#
+#     # 1. Analiza korelacji
+#     correlation_matrix = features.corr()
+#     print("\n=== Macierz korelacji ===")
+#
+#     # Znajdź pary zmiennych z wysoką korelacją (>0.8)
+#     high_corr_pairs = []
+#     for i in range(len(correlation_matrix.columns)):
+#         for j in range(i):
+#             if abs(correlation_matrix.iloc[i, j]) > 0.8:
+#                 high_corr_pairs.append(
+#                     (correlation_matrix.columns[i],
+#                      correlation_matrix.columns[j],
+#                      correlation_matrix.iloc[i, j])
+#                 )
+#
+#     print("\nSilnie skorelowane pary zmiennych (|r| > 0.8):")
+#     for var1, var2, corr in high_corr_pairs:
+#         print(f"{var1} - {var2}: {corr:.3f}")
+#
+#     # 2. Rekurencyjna eliminacja cech (RFE)
+#     scaler = StandardScaler()
+#     X_scaled = scaler.fit_transform(features)
+#
+#     rfe = RFE(estimator=LinearRegression(), n_features_to_select=6)
+#     rfe = rfe.fit(X_scaled, target)
+#
+#     selected_features_rfe = features.columns[rfe.support_]
+#     print("\n=== Cechy wybrane przez RFE ===")
+#     print(selected_features_rfe)
+#
+#     # 3. Selekcja na podstawie testów statystycznych
+#     selector = SelectKBest(score_func=f_regression, k=6)
+#     selector.fit(X_scaled, target)
+#
+#     selected_features_stats = features.columns[selector.get_support()]
+#     print("\n=== Cechy wybrane przez SelectKBest ===")
+#     print(selected_features_stats)
+#
+#     # Podsumowanie wybranych zmiennych
+#     final_features = list(set(selected_features_rfe) & set(selected_features_stats))
+#     print("\n=== Rekomendowane zmienne do modelu ===")
+#     print(final_features)
+#
+#     return final_features, features, target
+#
+#
+# def main():
+#     # Wczytanie danych
+#     df = load_data()
+#
+#     # Analiza i selekcja zmiennych
+#     selected_features, X, y = analyze_feature_selection(df)
+#
+#     print("\nUzasadnienie wyboru metody eliminacji zmiennych:")
+#     print("""
+#     1. Eliminacja na podstawie korelacji:
+#        - Usuwamy zmienne silnie skorelowane (>0.8), aby uniknąć współliniowości
+#        - Wybieramy zmienną, która ma silniejszą korelację z % tłuszczu
+#
+#     2. Rekurencyjna eliminacja cech (RFE):
+#        - Iteracyjnie usuwa najsłabsze zmienne
+#        - Uwzględnia interakcje między zmiennymi
+#        - Wybiera optymalny zestaw predyktorów
+#
+#     3. Selekcja statystyczna (SelectKBest):
+#        - Wykorzystuje testy statystyczne (f_regression)
+#        - Wybiera zmienne najsilniej związane z % tłuszczu
+#        - Niezależna od modelu regresji
+#
+#     Finalna selekcja:
+#     - Wybieramy zmienne, które zostały wskazane przez co najmniej dwie metody
+#     - Zapewnia to stabilność i wiarygodność wyboru
+#     - Redukuje ryzyko przeuczenia modelu
+#     """)
+#
+#
+# if __name__ == "__main__":
+#     main()
+#
+# import pandas as pd
+# import numpy as np
+# import matplotlib.pyplot as plt
+# from sklearn.model_selection import train_test_split
+# from sklearn.preprocessing import StandardScaler
+# from sklearn.linear_model import LinearRegression
+# from sklearn.feature_selection import RFE
+# from statsmodels.regression.linear_model import OLS
+# from statsmodels.tools import add_constant
+# import seaborn as sns
+#
+#
+# def load_data():
+#     """Wczytanie danych z odpowiednim nagłówkiem"""
+#     columns = ['Density', 'Pct.BF', 'Age', 'Weight', 'Height', 'Neck', 'Chest',
+#                'Abdomen', 'Waist', 'Hip', 'Thigh', 'Knee', 'Ankle', 'Bicep',
+#                'Forearm', 'Wrist']
+#     return pd.read_csv('dane.txt', delim_whitespace=True, names=columns, skiprows=1)
+#
+#
+# def plot_correlations(df):
+#     """Wizualizacja korelacji ze zmienną objaśnianą"""
+#     fig, axs = plt.subplots(4, 4, figsize=(15, 15))
+#     for i, (name, X) in enumerate(df.items()):
+#         row = i // 4
+#         col = i % 4
+#         axs[row][col].scatter(X, df['Pct.BF'], alpha=0.5)
+#         axs[row][col].set_xlabel(name)
+#         axs[row][col].set_ylabel('Pct.BF')
+#     plt.tight_layout()
+#     plt.show()
+#
+#
+# def backward_elimination(df, y, significance_level=0.05):
+#     """Backward Elimination na podstawie p-value"""
+#     features = df.copy()
+#     while True:
+#         X_with_intercept = add_constant(features)
+#         model = OLS(y, X_with_intercept).fit()
+#         max_p_value = model.pvalues[1:].max()
+#
+#         if max_p_value > significance_level:
+#             max_index = model.pvalues[1:].argmax()
+#             removed_feature = features.columns[max_index]
+#             print(f"Usuwam zmienną {removed_feature} (p-value: {max_p_value:.4f})")
+#             features = features.drop(removed_feature, axis=1)
+#         else:
+#             break
+#     return features.columns
+#
+#
+# def forward_selection(df, y, significance_level=0.05):
+#     """Forward Selection na podstawie p-value"""
+#     selected_features = []
+#     remaining_features = list(df.columns)
+#
+#     while remaining_features:
+#         best_p_value = float('inf')
+#         best_feature = None
+#
+#         for feature in remaining_features:
+#             current_features = selected_features + [feature]
+#             X_with_intercept = add_constant(df[current_features])
+#             model = OLS(y, X_with_intercept).fit()
+#             p_value = model.pvalues[-1]  # p-value dla nowo dodanej zmiennej
+#
+#             if p_value < best_p_value:
+#                 best_p_value = p_value
+#                 best_feature = feature
+#
+#         if best_p_value < significance_level:
+#             print(f"Dodaję zmienną {best_feature} (p-value: {best_p_value:.4f})")
+#             selected_features.append(best_feature)
+#             remaining_features.remove(best_feature)
+#         else:
+#             break
+#
+#     return selected_features
+#
+#
+# def rfe_selection(X, y, n_features=6):
+#     """Rekurencyjna eliminacja cech"""
+#     scaler = StandardScaler()
+#     X_scaled = scaler.fit_transform(X)
+#
+#     rfe = RFE(estimator=LinearRegression(), n_features_to_select=n_features)
+#     rfe = rfe.fit(X_scaled, y)
+#
+#     selected_features = X.columns[rfe.support_]
+#     feature_ranking = pd.DataFrame({
+#         'Feature': X.columns,
+#         'Ranking': rfe.ranking_
+#     }).sort_values('Ranking')
+#
+#     return selected_features, feature_ranking
+#
+#
+# def main():
+#     # Wczytanie danych
+#     df = load_data()
+#
+#     # Wizualizacja korelacji
+#     print("Generowanie wykresów korelacji...")
+#     plot_correlations(df)
+#
+#     # Przygotowanie danych
+#     X = df.drop(['Pct.BF', 'Density'], axis=1)  # Usuwamy Density jako silnie skorelowaną
+#     y = df['Pct.BF']
+#
+#     print("\n=== Metoda 1: Backward Elimination ===")
+#     backward_features = backward_elimination(X, y)
+#     print("Wybrane cechy:", backward_features)
+#
+#     print("\n=== Metoda 2: Forward Selection ===")
+#     forward_features = forward_selection(X, y)
+#     print("Wybrane cechy:", forward_features)
+#
+#     print("\n=== Metoda 3: Recursive Feature Elimination ===")
+#     rfe_features, feature_ranking = rfe_selection(X, y)
+#     print("Wybrane cechy:", rfe_features)
+#     print("\nRanking cech:")
+#     print(feature_ranking)
+#
+#     # Porównanie wyników
+#     print("\n=== Podsumowanie wybranych cech ===")
+#     all_selected_features = set(backward_features) | set(forward_features) | set(rfe_features)
+#     feature_counts = {feature: sum([
+#         feature in backward_features,
+#         feature in forward_features,
+#         feature in rfe_features
+#     ]) for feature in all_selected_features}
+#
+#     print("\nLiczba metod wybierających daną cechę:")
+#     for feature, count in sorted(feature_counts.items(), key=lambda x: x[1], reverse=True):
+#         print(f"{feature}: {count}")
+#
+#     # Rekomendacja końcowa
+#     recommended_features = [f for f, c in feature_counts.items() if c >= 2]
+#     print("\nRekomendowane cechy (wybrane przez co najmniej 2 metody):")
+#     print(recommended_features)
+#
+#
+# if __name__ == "__main__":
+#     main()
+
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
-import matplotlib as mpl
-from mpl_toolkits.mplot3d import Axes3D
-from sklearn.metrics import mean_squared_error
-from sklearn.metrics import mean_squared_error
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LinearRegression
+from sklearn.feature_selection import RFE
+from statsmodels.regression.linear_model import OLS
+from statsmodels.tools import add_constant
 
 
-user_count_q = {
-    'Q':
-        ['Q3 08', 'Q1 09', 'Q2 09', 'Q3 09', 'Q4 09', 'Q1 10',
-         'Q2 10', 'Q3 10', 'Q4 10', 'Q1 11', 'Q2 11', 'Q3 11',
-         'Q4 11', 'Q1 12', 'Q2 12', 'Q3 12', 'Q4 12', 'Q1 13',
-         'Q2 13', 'Q3 13', 'Q4 13', 'Q1 14', 'Q2 14', 'Q3 14',
-         'Q4 14', 'Q1 15', 'Q2 15', 'Q3 15', 'Q4 15', 'Q1 16',
-         'Q2 16', 'Q3 16', 'Q4 16', 'Q1 17', 'Q2 17', 'Q3 17', 'Q4 17'],
-    'User count':
-        [100, 197, 242, 305, 360, 431, 482, 550, 608, 680, 739, 800,
-         845, 901, 955, 1007, 1056, 1110, 1155, 1189, 1228, 1276, 1317,
-         1350, 1393, 1441, 1490, 1545, 1591, 1654, 1712, 1788, 1860, 1936,
-         2006, 2072, 2129]
-}
-
-fb_stats_y_old = {
-    'Y': [2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017],
-    'Income': [153, 272, 777, 1974, 3711, 5089, 7872, 12466, 17928, 27638, 40653],
-    'Profit': [-138, -56, 229, 606, 1000, 53, 1500, 2940, 3688, 10217, 15934],
-    'Employment': [450, 850, 1218, 2127, 3200, 4619, 6337, 9199, 12691, 17048, 25105]
-}
-
-# Poprawione dane z 2008-2017
-fb_stats_y = {
-    'Y': [2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017],
-    'Income': [272, 777, 1974, 3711, 5089, 7872, 12466, 17928, 27638, 40653],
-    'Profit': [-56, 229, 606, 1000, 53, 1500, 2940, 3688, 10217, 15934],
-    'Employment': [850, 1218, 2127, 3200, 4619, 6337, 9199, 12691, 17048, 25105]
-}
-
-user_count_df = pd.DataFrame(data=user_count_q)
-fb_stats_y_df = pd.DataFrame(data=fb_stats_y)
-print(fb_stats_y_df)
-print(user_count_df)
+def load_data():
+    columns = ['Density', 'Pct.BF', 'Age', 'Weight', 'Height', 'Neck', 'Chest',
+               'Abdomen', 'Waist', 'Hip', 'Thigh', 'Knee', 'Ankle', 'Bicep',
+               'Forearm', 'Wrist']
+    return pd.read_csv('dane.txt', sep='\s+', names=columns, skiprows=1)
 
 
-def convert_quarter_to_year(quarter) -> int:
-    year_str = quarter.split(' ')[1]
-    year_int = 2000 + int(year_str)
-    return year_int
-
-
-user_count_y_df = user_count_df.copy()
-user_count_y_df['Q'] = user_count_df['Q'].map(convert_quarter_to_year)
-# Alternatywa byloby zaladowanie danych z Q4 jako max tez dobrze
-user_count_y_df = user_count_y_df
-user_count_y_df = user_count_y_df.groupby('Q', as_index=False).max()
-user_count_y_df.rename(columns={'Q': 'Y'}, inplace=True)
-print(user_count_y_df)
-
-fb_stats_y_df = pd.DataFrame(data=fb_stats_y)
-# Calculate costs
-fb_stats_y_df['Costs'] = fb_stats_y_df['Income'] - fb_stats_y_df['Profit']
-# fb_stats_y_df.drop([0], inplace=True)
-fb_stats_y_df.reset_index(drop=True, inplace=True)
-fb_stats_y_df.insert(3, 'User count', user_count_y_df['User count'])
-print(fb_stats_y_df)
-
-pd.plotting.scatter_matrix(fb_stats_y_df, figsize=(10, 10))
-
-user_count_q_test = {
-    'Q':
-        ['Q1 18', 'Q2 18', 'Q3 18', 'Q4 18',
-         'Q1 19', 'Q2 19', 'Q3 19', 'Q4 19',
-         'Q1 20', 'Q2 20', 'Q3 20', 'Q4 20',
-         'Q1 21', 'Q2 21', 'Q3 21', 'Q4 21',
-         'Q1 22', 'Q2 22', 'Q3 22', 'Q4 22'],
-    'User count':
-        [2196, 2234, 2271, 2320, 2375, 2414, 2449, 2498, 2603, 2701, 2740, 2797,
-         2853, 2895, 2910, 2912, 2936, 2934, 2958, 2963]
-}
-
-fb_stats_y_test = {
-    'Y': [2018, 2019, 2020, 2021, 2022],
-    'Income': [55838, 70697, 85965, 117929, 116609],
-    'Profit': [22112, 18485, 29146, 39370, 23200],
-    'Costs': [33726, 52212, 56819, 78559, 93409],
-    'Employment': [35587, 44942, 58604, 71970, 87314],
-    'User count': [2320, 2498, 2797, 2912, 2963]
-}
-
-user_count_test_df = pd.DataFrame(data=user_count_q_test)
-fb_stats_y_test_df = pd.DataFrame(data=fb_stats_y_test)
-print(user_count_test_df)
-print(fb_stats_y_test_df)
-
-
-def calculate_model_stats(y_hat, y_true, X) -> dict:
-    # Dodajemy kolumne jedynek dla wyrazu wolnego
+def calculate_model_stats(y_hat, y_true, X):
     X = np.insert(X, 0, 1, axis=1)
-
     residuals = y_true - y_hat
-    # Obliczamy sume kwadratow reszt(RSS - Residual Sum of Squares)
-    # RSS = e^T * e, gdzie e to wektor reszt
-    residuals_sum_squared = residuals.T @ residuals
+    residual_sum_of_squares = np.sum(residuals ** 2)
+    standard_variance = residual_sum_of_squares / (y_hat.shape[0] - X.shape[1])
+    model_coefs_variances = standard_variance * np.linalg.inv(X.T @ X)
 
-    # Obliczamy estymator wariancji resztowej (σ²)
-    # σ² = RSS/(n-k), gdzie:
-    # n = liczba obserwacji (y_hat.shape[0])
-    # k = liczba parametrów modelu (X.shape[1])
-    standard_variance = residuals_sum_squared[0, 0] / (y_hat.shape[0] - X.shape[1])
-
-    # Var(β̂) = σ² × (X^T × X)^(-1)
-    model_coefficients_covariance = standard_variance * np.linalg.inv(
-        X.T @ X)  # Liczymy macierz kowariancji wspl. modelu
-    stats = dict()
-
-    # Obliczamy błędy standardowe dla każdego współczynnika
-    # SE(β̂ᵢ) = √Var(β̂ᵢ)
-    for number in range(model_coefficients_covariance.shape[0]):
-        stats['Standard errror a' + str(number)] = np.sqrt(model_coefficients_covariance[number, number])
-
-    # Na koniec blad standardowy modelu
-    stats['Standard error e'] = np.sqrt(standard_variance)
+    stats = {}
+    for number in range(model_coefs_variances.shape[0]):
+        stats[f'Standard error a{number}'] = np.sqrt(model_coefs_variances[number, number])
+    stats['Standard error y'] = np.sqrt(standard_variance)
     return stats
 
 
-def transform_quarter_to_number(string) -> int:
-    if ' ' not in string:
-        raise ValueError(f"Invalid format for quarter: {string}")
-    quarter, year = string.split(' ')
-    quarters = {'Q1': 0, 'Q2': 1, 'Q3': 2, 'Q4': 3}
-    year = int(year) - 8
-    return year * 4 + quarters[quarter]
+def plot_density_regression(df):
+    """Wizualizacja regresji liniowej dla Density vs Pct.BF"""
+    D = df['Density']
+    B = df['Pct.BF']
+
+    # Split danych
+    D_train, D_test, B_train, B_test = train_test_split(D, B, test_size=0.2, random_state=42)
+
+    # Trenowanie modelu
+    model = LinearRegression()
+    model.fit(D_train.values.reshape(-1, 1), B_train)
+
+    # Obliczenie R^2
+    score = model.score(D_test.values.reshape(-1, 1), B_test)
+
+    # Obliczenie błędów
+    errors = calculate_model_stats(
+        model.predict(D_train.values.reshape(-1, 1)),
+        B_train.values.reshape(-1, 1),
+        D_train.values.reshape(-1, 1)
+    )
+    B_error = errors['Standard error y']
+
+    # Tworzenie wykresu
+    plt.figure(figsize=(10, 6))
+
+    # Generowanie linii predykcji
+    D_range = np.linspace(min(D), max(D), 100).reshape(-1, 1)
+    B_pred = model.predict(D_range)
+
+    # Przedział ufności
+    plt.fill_between(
+        D_range.reshape(-1),
+        (B_pred - B_error).reshape(-1),
+        (B_pred + B_error).reshape(-1),
+        color='yellow',
+        alpha=0.3,
+        label='Przedział ufności'
+    )
+
+    # Dane treningowe i testowe
+    plt.scatter(D_train, B_train, color='blue', label='Dane treningowe', alpha=0.6)
+    plt.scatter(D_test, B_test, color='red', label='Dane testowe', alpha=0.6)
+
+    # Linia regresji
+    plt.plot(D_range, B_pred, color='green', linewidth=2, label=f'Regresja (R² = {score:.4f})')
+
+    plt.xlabel('Gęstość (Density)')
+    plt.ylabel('Procent tłuszczu (Pct.BF)')
+    plt.title('Regresja liniowa: Gęstość vs Procent tłuszczu')
+    plt.legend()
+    plt.grid(True, alpha=0.3)
+    plt.show()
+
+    return model.coef_[0], model.intercept_, score
 
 
-def transform_number_to_quarter(number) -> str:
-    year = (number // 4) + 8
-    quarters = {0: 'Q1', 1: 'Q2', 2: 'Q3', 3: 'Q4'}
-    quarter = quarters[number % 4]
-    quarter_string = quarter + ' {:02d}'.format(year)
-    return quarters[quarter] + ' ' + str(year)
+def plot_correlations(df):
+    """Wizualizacja korelacji ze zmienną objaśnianą"""
+    fig, axs = plt.subplots(4, 4, figsize=(15, 15))
+    for i, (name, X) in enumerate(df.items()):
+        row = i // 4
+        col = i % 4
+        axs[row][col].scatter(X, df['Pct.BF'], alpha=0.5)
+        axs[row][col].set_xlabel(name)
+        axs[row][col].set_ylabel('Pct.BF')
+    plt.tight_layout()
+    plt.show()
 
 
-user_count_df['Q'] = user_count_df['Q'].astype(str).map(transform_quarter_to_number)
-user_count_test_df['Q'] = user_count_test_df['Q'].astype(str).map(transform_quarter_to_number)
-print(user_count_df)
-print(user_count_test_df)
+def backward_elimination(df, y, significance_level=0.05):
+    """Backward Elimination na podstawie p-value"""
+    features = df.copy()
+    while True:
+        X_with_intercept = add_constant(features)
+        model = OLS(y, X_with_intercept).fit()
+        max_p_value = model.pvalues[1:].max()
 
-R_train = user_count_df['Q'].to_numpy().reshape(-1, 1)
-U_train = user_count_df['User count'].to_numpy().reshape(-1, 1)
-R_test = user_count_test_df['Q'].to_numpy().reshape(-1, 1)
-U_test = user_count_test_df['User count'].to_numpy().reshape(-1, 1)
-
-linear_regression = LinearRegression()
-linear_regression.fit(R_train, U_train)
-
-print(linear_regression)
-
-print(f'User count R^2: {linear_regression.score(R_test, U_test):}')
-print(f"Model: U = {linear_regression.intercept_[0]:} + {linear_regression.coef_[0][0]:} * R")
-
-errors = calculate_model_stats(linear_regression.predict(R_train), U_train, R_train)
-print(errors)
-
-# Przygotowanie danych
-train_predictions = linear_regression.predict(R_train)
-test_predictions = linear_regression.predict(R_test)
-
-mse = mean_squared_error(U_train, train_predictions)
-std_dev = np.sqrt(mse)
-confidence_interval = 1.96 * std_dev  # 95% przedział ufności
-
-# Tworzenie wykresu
-plt.figure(figsize=(15, 8))
-
-# Dane treningowe
-plt.scatter(R_train, U_train, color='#1f77b4', alpha=0.6, s=50,
-            label='Liczba użytkowników prawdziwa (dane uczące)')
-plt.plot(R_train, train_predictions, color='#ff0000', linewidth=2,
-         label='Liczba użytkowników przewidywana (dane uczące)')
-
-# Dane testowe
-plt.scatter(R_test, U_test, color='#2ca02c', alpha=0.6, s=50,
-            label='Liczba użytkowników prawdziwa (dane testowe)')
-plt.plot(R_test, test_predictions, color='#ff7f0e', linewidth=2,
-         label='Liczba użytkowników przewidywana (dane testowe)')
-
-# Przedział ufności
-plt.fill_between(
-    np.concatenate([R_train.flatten(), R_test.flatten()]),
-    np.concatenate([train_predictions.flatten(), test_predictions.flatten()]) - confidence_interval,
-    np.concatenate([train_predictions.flatten(), test_predictions.flatten()]) + confidence_interval,
-    color='yellow', alpha=0.2, label='Odchylenie standardowe prognozy'
-)
-
-# Formatowanie wykresu
-plt.xlabel('Kwartał', fontsize=12)
-plt.ylabel('Liczba użytkowników [mln]', fontsize=12)
-plt.title('Prognoza liczby użytkowników Facebooka', fontsize=14, pad=20)
-plt.grid(True, alpha=0.3)
-plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
-
-# Formatowanie osi X - teraz pokazujemy wszystkie kwartały
-plt.xticks(rotation=45)
-new_labels = []
-for q in range(60):
-    year = 8 + q // 4
-    quarter = q % 4 + 1
-    new_labels.append(f'Q{quarter} {year:02d}')
-plt.xticks(range(0, 60), new_labels, rotation=45, ha='right')
-
-# Dodanie informacji o R²
-plt.text(0.02, 0.95, f'R² (test) = {linear_regression.score(R_test, U_test):.4f}',
-         transform=plt.gca().transAxes,
-         bbox=dict(facecolor='white', edgecolor='gray', alpha=0.8))
-
-plt.tight_layout()
-plt.show()
+        if max_p_value > significance_level:
+            max_index = model.pvalues[1:].argmax()
+            removed_feature = features.columns[max_index]
+            print(f"Usuwam zmienną {removed_feature} (p-value: {max_p_value:.4f})")
+            features = features.drop(removed_feature, axis=1)
+        else:
+            break
+    return features.columns
 
 
-# Funckja zmieniona w celu lepszej czytelnosci
-def transform_number_to_quarter(number) -> str:
-    quarters = {0: 'Q1', 1: 'Q2', 2: 'Q3', 3: 'Q4'}
-    year = 2008 + (number // 4)
-    quarter = quarters[number % 4]
-    return f'{quarter} {year}'
+def forward_selection(df, y, significance_level=0.05):
+    """Forward Selection na podstawie p-value"""
+    selected_features = []
+    remaining_features = list(df.columns)
+
+    while remaining_features:
+        best_p_value = float('inf')
+        best_feature = None
+
+        for feature in remaining_features:
+            current_features = selected_features + [feature]
+            X_with_intercept = add_constant(df[current_features])
+            model = OLS(y, X_with_intercept).fit()
+            p_value = model.pvalues[-1]  # p-value dla nowo dodanej zmiennej
+
+            if p_value < best_p_value:
+                best_p_value = p_value
+                best_feature = feature
+
+        if best_p_value < significance_level:
+            print(f"Dodaję zmienną {best_feature} (p-value: {best_p_value:.4f})")
+            selected_features.append(best_feature)
+            remaining_features.remove(best_feature)
+        else:
+            break
+
+    return selected_features
 
 
-# Przygotowanie danych
-train_predictions = linear_regression.predict(R_train)
-test_predictions = linear_regression.predict(R_test)
+def rfe_selection(X, y, n_features=6):
+    """Rekurencyjna eliminacja cech"""
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(X)
 
-# Obliczanie przedziału ufności
-mse = mean_squared_error(U_train, train_predictions)
-std_dev = np.sqrt(mse)
-confidence_interval = 1.96 * std_dev  # 95% przedział ufności
+    rfe = RFE(estimator=LinearRegression(), n_features_to_select=n_features)
+    rfe = rfe.fit(X_scaled, y)
 
-# Tworzenie wykresu z większym rozmiarem i lepszymi proporcjami
-plt.figure(figsize=(16, 9))
+    selected_features = X.columns[rfe.support_]
+    feature_ranking = pd.DataFrame({
+        'Feature': X.columns,
+        'Ranking': rfe.ranking_
+    }).sort_values('Ranking')
 
-# Konfiguracja stylu
-plt.style.use('seaborn-v0_8-deep')
-colors = {
-    'train_dots': '#1f77b4',
-    'train_line': '#ff0000',
-    'test_dots': '#2ca02c',
-    'test_line': '#ff7f0e',
-    'confidence': '#fff59d'
-}
-
-# Dane treningowe
-plt.scatter(R_train, U_train, color=colors['train_dots'], alpha=0.7, s=60,
-            label='Rzeczywista liczba użytkowników (dane uczące)',
-            edgecolor='white', linewidth=1)
-plt.plot(R_train, train_predictions, color=colors['train_line'], linewidth=2.5,
-         label='Prognozowana liczba użytkowników (dane uczące)')
-
-# Dane testowe
-plt.scatter(R_test, U_test, color=colors['test_dots'], alpha=0.7, s=60,
-            label='Rzeczywista liczba użytkowników (dane testowe)',
-            edgecolor='white', linewidth=1)
-plt.plot(R_test, test_predictions, color=colors['test_line'], linewidth=2.5,
-         label='Prognozowana liczba użytkowników (dane testowe)')
-
-# Przedział ufności z lepszą przezroczystością i kolorem
-all_quarters = np.concatenate([R_train.flatten(), R_test.flatten()])
-all_predictions = np.concatenate([train_predictions.flatten(), test_predictions.flatten()])
-plt.fill_between(
-    all_quarters,
-    all_predictions - confidence_interval,
-    all_predictions + confidence_interval,
-    color=colors['confidence'],
-    alpha=0.3,
-    label='95% przedział ufności'
-)
-
-# Formatowanie osi i etykiet
-plt.xlabel('Kwartał', fontsize=12, fontweight='bold')
-plt.ylabel('Liczba użytkowników [mln]', fontsize=12, fontweight='bold')
-plt.title('Prognoza liczby użytkowników Facebooka w latach 2008-2022',
-          fontsize=16, pad=20, fontweight='bold')
-
-# Generowanie etykiet osi X używając zdefiniowanych funkcji
-x_ticks = range(0, 60)
-x_labels = [transform_number_to_quarter(q) for q in x_ticks]
-plt.xticks(x_ticks, x_labels, rotation=45, ha='right')
-
-# Dodanie siatki z lepszą widocznością
-plt.grid(True, linestyle='--', alpha=0.3)
-
-# Lepsze umiejscowienie legendy i dodanie ramki
-legend = plt.legend(bbox_to_anchor=(1.15, 1), loc='upper left',
-                    frameon=True, fancybox=True, shadow=True)
-legend.get_frame().set_alpha(0.9)
-
-# Dodanie informacji o R² w lepszym formacie
-r2_score = linear_regression.score(R_test, U_test)
-stats_text = f'R² (test) = {r2_score:.4f}\n'
-stats_text += f'RMSE = {np.sqrt(mse):.2f} mln'
-
-plt.text(0.02, 0.95, stats_text,
-         transform=plt.gca().transAxes,
-         bbox=dict(facecolor='white',
-                   edgecolor='gray',
-                   alpha=0.8,
-                   boxstyle='round,pad=0.5'),
-         fontsize=10)
-
-# Dodanie adnotacji dla ważnych punktów
-max_users_idx = np.argmax(U_test)
-plt.annotate(f'Maksimum: {U_test[max_users_idx][0]:.0f} mln',
-             xy=(R_test[max_users_idx], U_test[max_users_idx]),
-             xytext=(10, 10), textcoords='offset points',
-             bbox=dict(facecolor='white', edgecolor='gray', alpha=0.7),
-             arrowprops=dict(arrowstyle='->'))
-
-# Dostosowanie układu i marginesów
-plt.tight_layout()
-
-# Pokazanie wykresu
-plt.show()
+    return selected_features, feature_ranking
 
 
+def main():
+    # Wczytanie danych i podstawowa analiza
+    df = load_data()
+
+    # Wykonanie regresji i wyświetlenie wykresu
+    coef, intercept, r2 = plot_density_regression(df)
+    print(f"\nRegresja liniowa Density vs Pct.BF:")
+    print(f"Współczynnik kierunkowy (a): {coef:.4f}")
+    print(f"Wyraz wolny (b): {intercept:.4f}")
+    print(f"R²: {r2:.4f}")
+
+    # Wizualizacja korelacji
+    print("Generowanie wykresów korelacji...")
+    plot_correlations(df)
+
+    # Przygotowanie danych
+    X = df.drop(['Pct.BF', 'Density'], axis=1)  # Usuwamy Density jako silnie skorelowaną
+    y = df['Pct.BF']
+
+    print("\n=== Metoda 1: Backward Elimination ===")
+    backward_features = backward_elimination(X, y)
+    print("Wybrane cechy:", backward_features)
+
+    print("\n=== Metoda 2: Forward Selection ===")
+    forward_features = forward_selection(X, y)
+    print("Wybrane cechy:", forward_features)
+
+    print("\n=== Metoda 3: Recursive Feature Elimination ===")
+    rfe_features, feature_ranking = rfe_selection(X, y)
+    print("Wybrane cechy:", rfe_features)
+    print("\nRanking cech:")
+    print(feature_ranking)
+
+    # Porównanie wyników
+    print("\n=== Podsumowanie wybranych cech ===")
+    all_selected_features = set(backward_features) | set(forward_features) | set(rfe_features)
+    feature_counts = {feature: sum([
+        feature in backward_features,
+        feature in forward_features,
+        feature in rfe_features
+    ]) for feature in all_selected_features}
+
+    print("\nLiczba metod wybierających daną cechę:")
+    for feature, count in sorted(feature_counts.items(), key=lambda x: x[1], reverse=True):
+        print(f"{feature}: {count}")
+
+    # Rekomendacja końcowa
+    recommended_features = [f for f, c in feature_counts.items() if c >= 2]
+    print("\nRekomendowane cechy (wybrane przez co najmniej 2 metody):")
+    print(recommended_features)
 
 
+if __name__ == "__main__":
+    main()
