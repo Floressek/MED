@@ -252,6 +252,7 @@
 #     main()
 
 import pandas as pd
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
@@ -261,12 +262,12 @@ from sklearn.feature_selection import RFE
 from statsmodels.regression.linear_model import OLS
 from statsmodels.tools import add_constant
 
-
 def load_data():
     columns = ['Density', 'Pct.BF', 'Age', 'Weight', 'Height', 'Neck', 'Chest',
                'Abdomen', 'Waist', 'Hip', 'Thigh', 'Knee', 'Ankle', 'Bicep',
                'Forearm', 'Wrist']
-    return pd.read_csv('dane.txt', sep='\s+', names=columns, skiprows=1)
+    # Here input path is hardcoded, but it can be changed to filepath
+    return pd.read_csv(r"C:\Users\szyme\PycharmProjects\MED\MED_LAB_1\data\dane.txt", sep='\s+', names=columns, skiprows=1)
 
 
 def calculate_model_stats(y_hat, y_true, X):
