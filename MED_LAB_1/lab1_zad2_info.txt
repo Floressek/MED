@@ -1,0 +1,60 @@
+            ### METODY SELEKCJI CECH ###
+- Lasso reduction - zmniejszanie dużych współczynników regresji,
+                     aby ograniczyć nadmierne dopasowanie
+- Principal Component Analysis (PCA) - najpopularniejsza technika redukcji wymiarowości
+- Odrzucenie skorelowanych zmiennych, aby utworzyć zestaw danych o zredukowanych funkcjach
+- Używanie regresji liniowej w celu wybrania funkcji w oparciu o wartość "p"
+
+1. Backward selection
+2. Forward selection
+3. Stepwise selection
+
+
+Backward elimination: - model ma wszystkie zmienne na początku i eliminujesz zbędne po kolei
+1. Na pewno trzeba stworzyć macierz z kolumną samych 1
+
+                ***WYJAŚNIENIE p-value***
+"W statystyce wartość p to p-ństwo uzyskania zaobserwowanych wyników testu
+przy założeniu, że hipoteza zerowa jest poprawna" == "że uzyskasz
+takie same wyniki, jak w przypadku hipotezy zerowej"
+ - jeśli p < 0,05 => hipoteza zerowa nieprawdziwa
+ - jeśli p>= 0,05 => hipoteza zerowa prawdziwa
+
+ 2. Dopasuj model do cech.
+ 3. Po dopasowaniu modelu szukamy w wynikach statystycznych cechy z największą wartością p
+ 4. Kontynuuj gdy p>0,05 - w przypadku gdy nie ma p > 0,05 to to jest finalna lista cech
+ 5. Usuń cechę z najwyższą wartością p
+ 6. Ponownie dopasuj model
+ !!! WSZYSTKIE CECHY MUSZĘ MIEĆ P - VALUE MNIEJSZE NIŻ OBRANY POZIOM (najczęściej 0,05)
+
+ 2. Forward selection - na początku masz pusty model i później dodajesz zmienne po kolei,
+ które daja najlepszą poprawę twojego modelu i  testujemy z każdą iteracją. Jest kilka sposobów
+ na określenie która zmienna wchodzi:
+  - finding the lowest score under cross validation
+  - the lowest p-value
+  - any of a number of tests or measures accuracy
+
+1. Dopasuj model regresji zawierający wyłącznie wyraz wolny, bez zmiennych predykcyjnych
+2. W każdej iteracji jest dodawana jest cecha, która najbardziej poprawia wskaźnik modelu
+(R2 dla regresji liniowej)
+4. Kontynuujesz dopóki nie zostanie spełnione kryterium stopu:
+- brak dalszej znaczącej poprawy wskaźnika jakości
+- osiągnięcie maksymalnej liczby cech w modelu
+- spadek jakości modelu po dodaniu kolejnych cech
+
+Można zmienne dodawać:
+- na podstawie wartości p-value - jeśli p-value jest mniejsza od wybranego poziomu istotności,
+to dodajemy ją
+
+Lasso Regression (Regresja LASSO)
+LASSO (Least Absolute Shrinkage and Selection Operator) to metoda regresji, która łączy:
+
+Dobór cech (feature selection).
+Regularizację modelu, czyli ograniczanie nadmiernego dopasowania.
+Czym jest regularizacja?
+Regularizacja to technika, która dodaje karę za duże wartości współczynników w modelu, co prowadzi do:
+
+Ograniczenia złożoności modelu.
+Redukcji wpływu mniej istotnych cech.
+
+
