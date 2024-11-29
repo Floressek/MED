@@ -1,4 +1,4 @@
-            ### METODY SELEKCJI CECH ###
+### METODY SELEKCJI CECH ###
 - Lasso reduction - zmniejszanie dużych współczynników regresji,
                      aby ograniczyć nadmierne dopasowanie
 - Principal Component Analysis (PCA) - najpopularniejsza technika redukcji wymiarowości
@@ -13,7 +13,7 @@
 Backward elimination: - model ma wszystkie zmienne na początku i eliminujesz zbędne po kolei
 1. Na pewno trzeba stworzyć macierz z kolumną samych 1
 
-                ***WYJAŚNIENIE p-value***
+***WYJAŚNIENIE p-value***
 "W statystyce wartość p to p-ństwo uzyskania zaobserwowanych wyników testu
 przy założeniu, że hipoteza zerowa jest poprawna" == "że uzyskasz
 takie same wyniki, jak w przypadku hipotezy zerowej"
@@ -27,7 +27,7 @@ takie same wyniki, jak w przypadku hipotezy zerowej"
  6. Ponownie dopasuj model
  !!! WSZYSTKIE CECHY MUSZĘ MIEĆ P - VALUE MNIEJSZE NIŻ OBRANY POZIOM (najczęściej 0,05)
 
- 2. Forward selection - na początku masz pusty model i później dodajesz zmienne po kolei,
+Forward selection - na początku masz pusty model i później dodajesz zmienne po kolei,
  które daja najlepszą poprawę twojego modelu i  testujemy z każdą iteracją. Jest kilka sposobów
  na określenie która zmienna wchodzi:
   - finding the lowest score under cross validation
