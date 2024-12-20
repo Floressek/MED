@@ -53,6 +53,7 @@ plt.figure(figsize=(12, 6))
 plt.scatter(train_data['miesiac'], train_data['suma_bledow'],
             label='Dane treningowe', color='blue', alpha=0.5)
 
+
 # Dane testowe
 plt.scatter(test_data['miesiac'], test_data['suma_bledow'],
             label='Dane testowe', color='green', alpha=0.5)
