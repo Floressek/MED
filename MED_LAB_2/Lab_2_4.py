@@ -11,8 +11,8 @@ import matplotlib.pyplot as plt
 df = pd.read_csv('Płatki-sniadaniowe-cereals.txt', sep='\t')
 
 # Przygotowanie danych do modelowania
-# features = ['kalorie', 'cukry', 'weglowodany', 'proteiny', 'tluszcz', 'blonnik']
-features = ['kalorie', 'cukry']
+features = ['kalorie', 'cukry', 'weglowodany', 'proteiny', 'tluszcz', 'blonnik']
+# features = ['kalorie', 'cukry']
 X = df[features]
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
