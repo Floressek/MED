@@ -16,7 +16,7 @@ Repozytorium podzielone jest na katalogi odpowiadające poszczególnym laborator
 
 - `MED_LAB_1/` - materiały z pierwszego laboratorium dotyczącego analizy regresji.
 - `MED_LAB_2/` - materiały z drugiego laboratorium poświęconego analizie skupień.
-- `MED_LAB_3/` - materiały z trzeciego laboratorium obejmującego analizę płatków śniadaniowych.
+- `MED_LAB_3/` - materiały z trzeciego laboratorium obejmującego analizę płatków śniadaniowych. Obecnie w produkcji!
 
 ## Wymagania
 
