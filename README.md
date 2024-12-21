@@ -1,120 +1,67 @@
-# Metody eksploracji danych - Laboratorium 1
+# Metody Eksploracji Danych (MED)
 
-**Autor**: Romuald Hoffmann
+Autorzy: Izabela Skowron i Szymon Florek
 
----
+## Opis Projektu
 
-## Temat: Analiza regresji - regresja liniowa
+Niniejsze repozytorium zawiera materiały i rozwiązania z laboratoriów realizowanych w ramach przedmiotu **Metody Eksploracji Danych**. Celem zajęć jest zapoznanie się z różnorodnymi technikami analizy danych, w tym:
 
-### Przekształcanie funkcji nieliniowych w równoważne liniowe
-### Budowa modelu na podstawie danych (ogólnie dostępnych)
+- **Regresja liniowa**: modelowanie zależności między zmiennymi ciągłymi.
+- **Regresja logistyczna**: analiza zależności między zmiennymi, gdzie zmienna zależna jest dychotomiczna.
+- **Klasyfikatory**: implementacja i ocena różnych algorytmów klasyfikacyjnych, takich jak drzewa decyzyjne, k-NN, SVM i inne.
 
----
+## Struktura Repozytorium
 
-### Zadanie
+Repozytorium podzielone jest na katalogi odpowiadające poszczególnym laboratoriom:
 
-Mamy zgromadzone dane dotyczące przedsiębiorstwa internetowego Meta, w tym odnoszące się do portalu „Facebook”. Dane zawarte są w poniższych tabelach i dotyczą:
+- `MED_LAB_1/` - materiały z pierwszego laboratorium dotyczącego analizy regresji.
+- `MED_LAB_2/` - materiały z drugiego laboratorium poświęconego analizie skupień.
+- `MED_LAB_3/` - materiały z trzeciego laboratorium obejmującego analizę płatków śniadaniowych.
 
-- liczby użytkowników (klientów) w rozliczeniu na kwartały w poszczególnych latach,
-- przychodów i zysków liczone w milionach dolarów amerykańskich,
-- zatrudnienia.
+## Wymagania
 
-#### Tabela 1. Liczba użytkowników portalu społecznościowego „Facebook”
+Aby zapewnić kompatybilność z Pythonem 3.12, zaleca się użycie następujących wersji pakietów:
 
-| Kwartał | Liczba użytkowników (mln) |
-| ------- | ------------------------- |
-| Q3 '08  | 100                       |
-| Q1 '09  | 197                       |
-| Q2 '09  | 242                       |
-| Q3 '09  | 305                       |
-| Q4 '09  | 360                       |
-| Q1 '10  | 431                       |
-| Q2 '10  | 482                       |
-| Q3 '10  | 550                       |
-| Q4 '10  | 608                       |
-| ...     | ...                       |
-| Q4 '17  | 2129                      |
+- **NumPy**: `1.26.3`
+- **pandas**: `2.2.3`
+- **Matplotlib**: `3.7.1`
+- **scikit-learn**: `1.5.2`
+- **statsmodels**: `0.14.4`
 
-#### Tabela 2. Przychody, zysk i zatrudnienie przedsiębiorstwa „Facebook”
+Aby zainstalować te pakiety, użyj następujących poleceń:
 
-| Rok | Przychód (mln $) | Zysk (mln $) | Zatrudnienie |
-| --- | ---------------- | ------------ | ------------ |
-| 2007 | 153             | -138         | 450          |
-| 2008 | 272             | -56          | 850          |
-| 2009 | 777             | 229          | 1218         |
-| 2010 | 1974            | 606          | 2127         |
-| 2011 | 3711            | 1000         | 3200         |
-| ...  | ...             | ...          | ...          |
-| 2017 | 40653           | 15934        | 25105        |
+```bash
+pip install numpy==1.26.3
+pip install pandas==2.2.3
+pip install matplotlib==3.7.1
+pip install scikit-learn==1.5.2
+pip install statsmodels==0.14.4
+```
 
----
+Pamiętaj, że niektóre z tych pakietów mogą wymagać dodatkowych zależności. Zaleca się instalację wirtualnego środowiska, aby uniknąć konfliktów z innymi projektami.
 
-### Instrukcje do analizy
+Jeśli napotkasz problemy z instalacją lub działaniem tych pakietów, sprawdź dokumentację każdego z nich pod kątem kompatybilności z Pythonem 3.12. 
 
-1. **Analiza danych**: Zastanów się, co chcesz zbadać i dlaczego (np. jakie pytania badawcze chcesz sobie odpowiedzieć).
-   
-2. **Propozycja modelu**: Wybierz model lub modele badające wybrane zależności i wylicz m.in. ich parametry strukturalne, odchylenia standardowe, miary dopasowania oraz przetestuj hipotezy.
-   
-3. **Analiza na podstawie danych**: Użyj danych przedstawionych w tabelach do przeprowadzenia analizy.
-   
-4. **Uzasadnienie modelu**: Uzasadnij wybór modeli oraz określ ich potencjalne zastosowanie, np. w predykcji.
+## Uruchomienie
 
-5. **Wnioski**: Na podstawie opracowanych modeli sformułuj własne wnioski.
+1. Sklonuj repozytorium:
 
-6. **Analiza danych z lat 2018-2020 oraz 2021-2023**: Znajdź dane z tych lat i sprawdź działanie modeli na procesie predykcji dla tego okresu.
+   ```bash
+   git clone https://github.com/Floressek/MED.git
+   ```
 
-7. **Sprawozdanie**: Wyniki analiz, w tym postawione pytania badawcze, hipotezy, wzory, wyniki obliczeń i wnioski, umieść w sprawozdaniu. Obliczenia można wykonać w dowolnym narzędziu używanym na zajęciach.
+2. Przejdź do wybranego katalogu laboratorium:
 
----
+   ```bash
+   cd MED/MED_LAB_X  # Zamień X na numer laboratorium
+   ```
 
-## Modele nieliniowe - linearyzowane
+3. Uruchom skrypt:
 
-### Przykłady metod linearyzacji wybranych funkcji nieliniowych
+   ```bash
+   python main.py
+   ```
 
-1. **Model wykładniczy z jedną zmienną objaśniającą**:
-   $[
-   \hat{y} = b \cdot a^X
-   $
-   Logarytmując obustronnie:
-   $
-   \log \hat{y} = \log b + X \cdot \log a
-   $]
-   
-2. **Model wykładniczy z dwiema zmiennymi objaśniającymi**:
-   $[
-   \hat{y} = b \cdot a^{X_1} \cdot c^{X_2}
-   $
-   Logarytmując obustronnie:
-   $
-   \log \hat{y} = \log b + X_1 \cdot \log a + X_2 \cdot \log c
-   $]
+## Licencja
 
-3. **Model potęgowy z dwiema zmiennymi objaśniającymi**:
-   $[
-   \hat{y} = b \cdot X^{a_1} \cdot Z^{a_2}
-   $
-   Logarytmując obustronnie:
-   $
-   \log \hat{y} = \log b + a_1 \cdot \log X + a_2 \cdot \log Z
-   $]
-
-4. **Model wykładniczo-potęgowy**:
-   $[
-   \hat{y} = b \cdot a^{X_1} \cdot Z^{a_2}
-   $
-   Logarytmując obustronnie:
-   $
-   \log \hat{y} = \log b + X_1 \cdot \log a + a_2 \cdot \log Z
-   $]
-
-5. **Wielomian stopnia trzeciego**:
-   $[
-   \hat{y} = a_0 + a_1 \cdot X + a_2 \cdot X^2 + a_3 \cdot X^3
-   $]
-
-6. **Funkcja wymierna ułamkowa (hiperbola)**:
-   $[
-   \hat{y} = a_1 \cdot \frac{1}{X} + a_0
-   $]
-
----
+Projekt jest licencjonowany na podstawie licencji MIT.
