@@ -9,7 +9,11 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import warnings
 
-warnings.filterwarnings('ignore')
+warnings.filterwarnings('ignore', category=FutureWarning)
+import os
+if not os.path.exists('Płatki-sniadaniowe-cereals.txt'):
+    raise FileNotFoundError("Plik 'Płatki-sniadaniowe-cereals.txt' nie został znaleziony.")
+
 
 # Ustawienia dla lepszej czytelności wykresów
 
