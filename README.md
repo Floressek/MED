@@ -14,9 +14,9 @@ Niniejsze repozytorium zawiera materiały i rozwiązania z laboratoriów realizo
 
 Repozytorium podzielone jest na katalogi odpowiadające poszczególnym laboratoriom:
 
-- `MED_LAB_1/` - materiały z pierwszego laboratorium dotyczącego analizy regresji.
-- `MED_LAB_2/` - materiały z drugiego laboratorium poświęconego analizie skupień.
-- `MED_LAB_3/` - materiały z trzeciego laboratorium obejmującego analizę płatków śniadaniowych. Obecnie w produkcji!
+- `MED_LAB_1/` - materiały z pierwszego laboratorium dotyczącego analizy regresji liniowej.
+- `MED_LAB_2/` - materiały z drugiego laboratorium poświęconego analizie regrejsi logistycznej (logit).
+- `MED_LAB_3/` - materiały z trzeciego laboratorium obejmującego analizę klasyfikatorow. Obecnie w produkcji
 
 ## Wymagania
 
